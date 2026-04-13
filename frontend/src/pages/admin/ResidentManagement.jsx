@@ -50,7 +50,7 @@ function ResidentMobileCard({ resident, onView, onEdit, onDelete }) {
     <div className="glass-card p-4 space-y-3">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-10 h-10 rounded-xl bg-primary-600 shadow-[0_0_18px_rgba(34,197,94,0.35)] flex items-center justify-center font-bold text-sm">
+          <div className="w-10 h-10 rounded-xl bg-primary-600 shadow-[0_0_18px_rgba(56,189,248,0.35)] flex items-center justify-center font-bold text-sm">
             {resident.name.charAt(0)}
           </div>
           <div className="min-w-0">
@@ -208,7 +208,7 @@ export default function ResidentManagement() {
                     <tr key={r.id} className="table-row">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-xl bg-primary-600 shadow-[0_0_16px_rgba(34,197,94,0.35)] flex items-center justify-center font-bold text-sm">
+                          <div className="w-9 h-9 rounded-xl bg-primary-600 shadow-[0_0_16px_rgba(56,189,248,0.35)] flex items-center justify-center font-bold text-sm">
                             {r.name.charAt(0)}
                           </div>
                           <div>
@@ -272,7 +272,7 @@ export default function ResidentManagement() {
         {viewResident && (
           <div className="space-y-4">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-2xl bg-primary-600 shadow-[0_0_24px_rgba(34,197,94,0.35)] flex items-center justify-center text-2xl font-bold">
+              <div className="w-16 h-16 rounded-2xl bg-primary-600 shadow-[0_0_24px_rgba(56,189,248,0.35)] flex items-center justify-center text-2xl font-bold">
                 {viewResident.name.charAt(0)}
               </div>
               <div>

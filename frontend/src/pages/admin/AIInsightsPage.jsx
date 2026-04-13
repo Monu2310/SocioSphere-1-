@@ -5,7 +5,7 @@ import { Sparkles, TrendingUp, Users, Car, ShoppingBag, Vote, Activity, Clock } 
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import toast from 'react-hot-toast';
 
-const COLORS = ['#22c55e', '#06b6d4', '#38bdf8', '#f59e0b', '#ef4444', '#14b8a6', '#84cc16'];
+const COLORS = ['#06b6d4', '#38bdf8', '#2dd4bf', '#f59e0b', '#ef4444', '#14b8a6', '#84cc16'];
 
 export default function AIInsightsPage() {
   const [insights, setInsights] = useState(null);
@@ -120,7 +120,7 @@ export default function AIInsightsPage() {
                 <XAxis type="number" tick={{ fill: '#64748b', fontSize: 11 }} />
                 <YAxis type="category" dataKey="name" tick={{ fill: '#94a3b8', fontSize: 11 }} width={120} />
                 <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: 8 }} />
-                <Bar dataKey="votes" fill="#22c55e" radius={[0, 6, 6, 0]} />
+                <Bar dataKey="votes" fill="#06b6d4" radius={[0, 6, 6, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : <p className="text-slate-400 text-sm text-center py-12">No poll data yet</p>}
@@ -131,7 +131,7 @@ export default function AIInsightsPage() {
       {logs.length > 0 && (
         <div className="glass-card p-6">
           <div className="flex items-center gap-2 mb-4">
-            <Activity size={18} className="text-green-400" />
+            <Activity size={18} className="text-cyan-300" />
             <h2 className="font-semibold text-white">Recent Activity Log</h2>
           </div>
           <div className="space-y-2">

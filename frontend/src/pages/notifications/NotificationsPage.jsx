@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
 const TYPE_ICONS = { info: Info, success: CheckCircle, warning: AlertTriangle, error: XCircle };
-const TYPE_COLORS = { info: 'text-cyan-300 bg-cyan-500/10', success: 'text-green-400 bg-green-500/10', warning: 'text-yellow-400 bg-yellow-500/10', error: 'text-red-400 bg-red-500/10' };
+const TYPE_COLORS = { info: 'text-cyan-300 bg-cyan-500/10', success: 'text-emerald-300 bg-emerald-500/10', warning: 'text-yellow-400 bg-yellow-500/10', error: 'text-red-400 bg-red-500/10' };
 
 export default function NotificationsPage() {
   const { isAdmin } = useAuth();

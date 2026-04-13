@@ -37,7 +37,7 @@ export default function Login() {
       <div className="w-full max-w-md animate-slide-up">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-primary-600 flex items-center justify-center mx-auto mb-4 shadow-[0_0_28px_rgba(34,197,94,0.35)]">
+          <div className="w-14 h-14 rounded-2xl bg-primary-600 flex items-center justify-center mx-auto mb-4 shadow-[0_0_28px_rgba(56,189,248,0.35)]">
             <Building2 size={24} className="text-white" />
           </div>
           <h1 className="text-2xl font-bold text-white">Welcome Back</h1>
@@ -49,7 +49,7 @@ export default function Login() {
           <button onClick={() => fillDemo('admin')} className="flex-1 text-xs bg-primary-500/20 border border-primary-500/30 text-primary-300 py-2 rounded-xl hover:bg-primary-500/30 transition-colors">
             ⚡ Demo Admin
           </button>
-          <button onClick={() => fillDemo('resident')} className="flex-1 text-xs bg-green-500/20 border border-green-500/30 text-green-300 py-2 rounded-xl hover:bg-green-500/30 transition-colors">
+          <button onClick={() => fillDemo('resident')} className="flex-1 text-xs bg-amber-500/20 border border-amber-500/30 text-amber-200 py-2 rounded-xl hover:bg-amber-500/30 transition-colors">
             🏠 Demo Resident
           </button>
         </div>

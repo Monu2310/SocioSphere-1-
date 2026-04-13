@@ -6,7 +6,7 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, 
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 
-const COLORS = ['#22c55e', '#06b6d4', '#38bdf8', '#f59e0b', '#ef4444'];
+const COLORS = ['#06b6d4', '#38bdf8', '#2dd4bf', '#f59e0b', '#ef4444'];
 
 export default function AdminDashboard() {
   const { user } = useAuth();
@@ -71,16 +71,10 @@ export default function AdminDashboard() {
           {pollData.length > 0 ? (
             <ResponsiveContainer width="100%" height={200}>
               <AreaChart data={pollData}>
-                <defs>
-                  <linearGradient id="votes" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
                 <XAxis dataKey="name" tick={{ fill: '#64748b', fontSize: 11 }} />
                 <YAxis tick={{ fill: '#64748b', fontSize: 11 }} />
                 <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: 8 }} />
-                <Area type="monotone" dataKey="votes" stroke="#22c55e" fill="url(#votes)" strokeWidth={2} />
+                <Area type="monotone" dataKey="votes" stroke="#06b6d4" fill="#06b6d4" fillOpacity={0.18} strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
           ) : (

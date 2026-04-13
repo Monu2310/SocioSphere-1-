@@ -1,3 +1,4 @@
+import { createElement } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
@@ -42,7 +43,7 @@ export default function Sidebar({ mobileOpen = false, onClose = () => {} }) {
     >
       {/* Logo */}
       <div className={`flex items-center gap-3 p-4 border-b border-white/10 ${collapsed ? 'justify-center' : ''}`}>
-        <div className="w-9 h-9 rounded-xl bg-primary-600 shadow-[0_0_22px_rgba(34,197,94,0.35)] flex items-center justify-center flex-shrink-0">
+        <div className="w-9 h-9 rounded-xl bg-primary-600 shadow-[0_0_22px_rgba(56,189,248,0.35)] flex items-center justify-center flex-shrink-0">
           <Building2 size={18} className="text-white" />
         </div>
         {!collapsed && (
@@ -57,7 +58,7 @@ export default function Sidebar({ mobileOpen = false, onClose = () => {} }) {
       {!collapsed && (
         <div className="mx-3 mt-3 p-3 glass-card">
           <p className="text-xs text-slate-400 truncate">{user?.name}</p>
-          <span className={`text-xs font-semibold mt-1 inline-block ${isAdmin ? 'text-primary-400' : 'text-green-400'}`}>
+          <span className={`text-xs font-semibold mt-1 inline-block ${isAdmin ? 'text-primary-400' : 'text-amber-300'}`}>
             {isAdmin ? '⚡ Admin' : '🏠 Resident'} {user?.flatNumber && `· ${user.flatNumber}`}
           </span>
         </div>
@@ -65,14 +66,14 @@ export default function Sidebar({ mobileOpen = false, onClose = () => {} }) {
 
       {/* Navigation */}
       <nav className="flex-1 p-3 space-y-1 mt-2 overflow-y-auto">
-        {links.map(({ to, icon: Icon, label }) => (
+        {links.map(({ to, icon, label }) => (
           <NavLink
             key={to}
             to={to}
             className={({ isActive }) => isActive ? 'sidebar-link-active' : 'sidebar-link'}
             onClick={onClose}
           >
-            <Icon size={18} className="flex-shrink-0" />
+            {createElement(icon, { size: 18, className: 'flex-shrink-0' })}
             {!collapsed && <span className="text-sm">{label}</span>}
           </NavLink>
         ))}

@@ -52,7 +52,7 @@ export default function ProfilePage() {
       <div className="glass-card p-6">
         <div className="flex items-center gap-5">
           <div className="relative">
-            <div className="w-20 h-20 rounded-2xl bg-primary-600 shadow-[0_0_28px_rgba(34,197,94,0.35)] flex items-center justify-center text-3xl font-bold text-white">
+            <div className="w-20 h-20 rounded-2xl bg-primary-600 shadow-[0_0_28px_rgba(56,189,248,0.35)] flex items-center justify-center text-3xl font-bold text-white">
               {user?.name?.charAt(0)}
             </div>
             <button className="absolute -bottom-1 -right-1 w-7 h-7 rounded-lg bg-primary-600 flex items-center justify-center hover:bg-primary-500 transition-colors">

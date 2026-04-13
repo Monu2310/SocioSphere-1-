@@ -10,7 +10,7 @@ function SlotGrid({ slots, isAdmin, onAssign, onRelease }) {
   const getSlotColor = (slot) => {
     if (slot.status === 'OCCUPIED') return 'bg-red-500/20 border-red-500/30';
     if (slot.slotType === 'VISITOR') return 'bg-yellow-500/10 border-yellow-500/20';
-    return 'bg-green-500/10 border-green-500/20';
+    return 'bg-cyan-500/10 border-cyan-500/20';
   };
 
   return (
@@ -24,7 +24,7 @@ function SlotGrid({ slots, isAdmin, onAssign, onRelease }) {
             onClick={() => isAdmin && (slot.status === 'AVAILABLE' ? onAssign(slot) : onRelease(slot))}
             title={assignment ? `${assignment.user?.name} (${assignment.user?.flatNumber})` : slot.slotNumber}
           >
-            <Car size={14} className={`mx-auto mb-1 ${slot.status === 'OCCUPIED' ? 'text-red-400' : slot.slotType === 'VISITOR' ? 'text-yellow-400' : 'text-green-400'}`} />
+            <Car size={14} className={`mx-auto mb-1 ${slot.status === 'OCCUPIED' ? 'text-red-400' : slot.slotType === 'VISITOR' ? 'text-yellow-400' : 'text-cyan-300'}`} />
             <p className={`text-xs font-mono ${slot.status === 'OCCUPIED' ? 'text-red-300' : 'text-slate-300'}`}>{slot.slotNumber}</p>
             {isAdmin && slot.status === 'OCCUPIED' && (
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-black/60 rounded-xl flex items-center justify-center transition-opacity">
@@ -199,7 +199,7 @@ export default function ParkingPage() {
 
       {/* Legend */}
       <div className="flex flex-wrap gap-3 text-xs text-slate-400">
-        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-green-500/40 border border-green-500/50"></span>Available</span>
+        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-cyan-500/40 border border-cyan-500/50"></span>Available</span>
         <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-red-500/40 border border-red-500/50"></span>Occupied</span>
         <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-yellow-500/30 border border-yellow-500/40"></span>Visitor</span>
         {isAdmin && <span className="text-slate-500">· Click available = assign · Click occupied = release</span>}

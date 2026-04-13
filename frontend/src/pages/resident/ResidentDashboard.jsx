@@ -91,7 +91,7 @@ export default function ResidentDashboard() {
                       <Badge status={poll.status} />
                     </div>
                     <p className="text-xs text-slate-400 mt-1">{totalVotes} vote{totalVotes !== 1 ? 's' : ''}</p>
-                    {poll.userVotedOptionId && <p className="text-xs text-green-400 mt-1">✓ You voted</p>}
+                    {poll.userVotedOptionId && <p className="text-xs text-cyan-300 mt-1">✓ You voted</p>}
                   </Link>
                 );
               })}

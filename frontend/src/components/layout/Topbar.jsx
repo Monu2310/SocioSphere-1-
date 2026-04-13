@@ -45,7 +45,7 @@ export default function Topbar({ onMenuToggle }) {
         </button>
 
         <div className="flex items-center gap-2 px-2.5 sm:px-3 py-2 rounded-xl bg-white/5 border border-white/10">
-          <div className="w-7 h-7 rounded-lg bg-primary-600 shadow-[0_0_18px_rgba(34,197,94,0.35)] flex items-center justify-center text-xs font-bold">
+          <div className="w-7 h-7 rounded-lg bg-primary-600 shadow-[0_0_18px_rgba(56,189,248,0.35)] flex items-center justify-center text-xs font-bold">
             {user?.name?.charAt(0)?.toUpperCase()}
           </div>
           <div className="hidden sm:block">

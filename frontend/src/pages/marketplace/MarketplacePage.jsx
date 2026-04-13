@@ -11,14 +11,26 @@ const CATEGORY_ICONS = { FURNITURE: '🛋️', ELECTRONICS: '📱', APPLIANCES: 
 
 const STATUS_COLORS = { AVAILABLE: 'badge-green', SOLD: 'badge-red', RESERVED: 'badge-yellow' };
 
-function ItemCard({ item, onEdit, onDelete, currentUserId, isAdmin }) {
+function ItemCard({ item, onView, onEdit, onDelete, currentUserId, isAdmin }) {
   const isOwner = item.seller?.id === currentUserId;
   const canModify = isOwner || isAdmin;
 
   return (
-    <div className="glass-card-hover overflow-hidden group">
+    <div
+      className="glass-card-hover overflow-hidden group cursor-pointer"
+      role="button"
+      tabIndex={0}
+      onClick={() => onView(item)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onView(item);
+        }
+      }}
+      aria-label={`Open details for ${item.title}`}
+    >
       {/* Image */}
-      <div className="h-44 bg-gradient-to-br from-white/5 to-white/10 flex items-center justify-center relative overflow-hidden">
+      <div className="h-44 bg-white/5 flex items-center justify-center relative overflow-hidden">
         {item.images?.length > 0 ? (
           <img src={item.images[0]} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
         ) : (
@@ -29,8 +41,18 @@ function ItemCard({ item, onEdit, onDelete, currentUserId, isAdmin }) {
         </div>
         {canModify && (
           <div className="absolute top-2 right-2 flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-            <button onClick={() => onEdit(item)} className="p-1.5 rounded-lg bg-dark-800/80 text-slate-300 hover:text-white"><Edit size={13} /></button>
-            <button onClick={() => onDelete(item)} className="p-1.5 rounded-lg bg-dark-800/80 text-red-400 hover:text-red-300"><Trash2 size={13} /></button>
+            <button
+              onClick={(e) => { e.stopPropagation(); onEdit(item); }}
+              className="p-1.5 rounded-lg bg-dark-800/80 text-slate-300 hover:text-white"
+            >
+              <Edit size={13} />
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); onDelete(item); }}
+              className="p-1.5 rounded-lg bg-dark-800/80 text-red-400 hover:text-red-300"
+            >
+              <Trash2 size={13} />
+            </button>
           </div>
         )}
       </div>
@@ -55,7 +77,11 @@ function ItemCard({ item, onEdit, onDelete, currentUserId, isAdmin }) {
               <p className="text-slate-500">{item.seller?.flatNumber}</p>
             </div>
             {item.seller?.phone && (
-              <a href={`tel:${item.seller.phone}`} className="flex items-center gap-1 text-primary-400 hover:text-primary-300">
+              <a
+                href={`tel:${item.seller.phone}`}
+                onClick={(e) => e.stopPropagation()}
+                className="flex items-center gap-1 text-primary-400 hover:text-primary-300"
+              >
                 <Phone size={11} /> Call
               </a>
             )}
@@ -66,6 +92,97 @@ function ItemCard({ item, onEdit, onDelete, currentUserId, isAdmin }) {
         )}
       </div>
     </div>
+  );
+}
+function ItemDetailsModal({ item, onClose, currentUserId, isAdmin, onEdit, onDelete }) {
+  const [activeImage, setActiveImage] = useState(0);
+
+  if (!item) return null;
+
+  const canModify = item.seller?.id === currentUserId || isAdmin;
+  const hasImages = item.images?.length > 0;
+
+  return (
+    <Modal isOpen={!!item} onClose={onClose} title="Item Details" size="lg">
+      <div className="space-y-5">
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <div className="h-56 sm:h-64 rounded-2xl overflow-hidden bg-white/5 border border-white/10 flex items-center justify-center">
+              {hasImages ? (
+                <img
+                  src={item.images[activeImage]}
+                  alt={`${item.title} preview`}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="text-6xl">{CATEGORY_ICONS[item.category] || '📦'}</div>
+              )}
+            </div>
+
+            {hasImages && item.images.length > 1 && (
+              <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+                {item.images.map((img, idx) => (
+                  <button
+                    key={`${img}-${idx}`}
+                    type="button"
+                    onClick={() => setActiveImage(idx)}
+                    className={`h-14 w-14 flex-shrink-0 rounded-xl overflow-hidden border ${idx === activeImage ? 'border-primary-400' : 'border-white/10'}`}
+                  >
+                    <img src={img} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-start justify-between gap-3">
+              <h2 className="text-xl sm:text-2xl font-bold text-white leading-snug">{item.title}</h2>
+              <Badge status={item.status} />
+            </div>
+            <p className="text-2xl sm:text-3xl font-bold text-primary-400">₹{Number(item.price).toLocaleString('en-IN')}</p>
+            <p className="text-sm text-slate-300 leading-relaxed">{item.description}</p>
+
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="surface-panel p-3">
+                <p className="text-slate-500">Category</p>
+                <p className="text-slate-200 mt-1">{CATEGORY_ICONS[item.category]} {item.category}</p>
+              </div>
+              <div className="surface-panel p-3">
+                <p className="text-slate-500">Seller</p>
+                <p className="text-slate-200 mt-1">{item.seller?.name || 'Unknown'}</p>
+              </div>
+              <div className="surface-panel p-3">
+                <p className="text-slate-500">Flat</p>
+                <p className="text-slate-200 mt-1">{item.seller?.flatNumber || '—'}</p>
+              </div>
+              <div className="surface-panel p-3">
+                <p className="text-slate-500">Posted</p>
+                <p className="text-slate-200 mt-1">{item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-IN') : '—'}</p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2 pt-2">
+              {item.seller?.phone && (
+                <a href={`tel:${item.seller.phone}`} className="btn-primary text-sm px-4 py-2">
+                  <Phone size={14} /> Call Seller
+                </a>
+              )}
+              {canModify && (
+                <>
+                  <button type="button" onClick={() => { onClose(); onEdit(item); }} className="btn-secondary text-sm px-4 py-2">
+                    <Edit size={14} /> Edit
+                  </button>
+                  <button type="button" onClick={() => { onClose(); onDelete(item); }} className="btn-danger text-sm px-4 py-2">
+                    <Trash2 size={14} /> Remove
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </Modal>
   );
 }
 
@@ -141,6 +258,7 @@ export default function MarketplacePage() {
   const [pagination, setPagination] = useState({});
   const [showCreate, setShowCreate] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [viewItem, setViewItem] = useState(null);
   const [editItem, setEditItem] = useState(null);
   const [deleteItem, setDeleteItem] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -326,7 +444,15 @@ export default function MarketplacePage() {
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           {items.map((item) => (
-            <ItemCard key={item.id} item={item} currentUserId={user?.id} isAdmin={isAdmin} onEdit={setEditItem} onDelete={setDeleteItem} />
+            <ItemCard
+              key={item.id}
+              item={item}
+              currentUserId={user?.id}
+              isAdmin={isAdmin}
+              onView={setViewItem}
+              onEdit={setEditItem}
+              onDelete={setDeleteItem}
+            />
           ))}
         </div>
       )}
@@ -335,7 +461,7 @@ export default function MarketplacePage() {
 
       <button
         onClick={() => setShowCreate(true)}
-        className="fixed bottom-24 right-4 z-40 sm:hidden w-12 h-12 rounded-full bg-primary-600 shadow-[0_0_28px_rgba(34,197,94,0.45)] text-white flex items-center justify-center"
+        className="fixed bottom-24 right-4 z-40 sm:hidden w-12 h-12 rounded-full bg-primary-600 shadow-[0_0_28px_rgba(56,189,248,0.45)] text-white flex items-center justify-center"
         aria-label="List new item"
       >
         <Plus size={20} />
@@ -344,6 +470,16 @@ export default function MarketplacePage() {
       <Modal isOpen={showCreate} onClose={() => setShowCreate(false)} title="List an Item" size="md">
         <ListingForm onSubmit={handleCreate} loading={submitting} />
       </Modal>
+
+      <ItemDetailsModal
+        key={viewItem?.id || 'no-item'}
+        item={viewItem}
+        onClose={() => setViewItem(null)}
+        currentUserId={user?.id}
+        isAdmin={isAdmin}
+        onEdit={setEditItem}
+        onDelete={setDeleteItem}
+      />
 
       <Modal isOpen={!!editItem} onClose={() => setEditItem(null)} title="Edit Listing" size="md">
         {editItem && <ListingForm onSubmit={handleEdit} loading={submitting} defaultValues={editItem} />}
