@@ -1,13 +1,15 @@
-import { useState } from 'react';
+  import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../../context/AuthContext';
-import { Building2, Eye, EyeOff, Mail, Lock, User, Phone, Home } from 'lucide-react';
+import { Building2, Eye, EyeOff, Mail, Lock, User, Phone, Home, Sun, Moon } from 'lucide-react';
+import { useTheme } from '../../context/ThemeContext';
 import { Spinner } from '../../components/common';
 import toast from 'react-hot-toast';
 
 export default function Register() {
   const { register: signup, loading } = useAuth();
+  const { isLight, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [showPw, setShowPw] = useState(false);
   const { register, handleSubmit, formState: { errors } } = useForm();
@@ -25,13 +27,24 @@ export default function Register() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-md animate-slide-up">
+        <div className="flex justify-end mb-3">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="btn-secondary"
+            aria-label={isLight ? 'Switch to dark mode' : 'Switch to light mode'}
+          >
+            {isLight ? <Moon size={15} /> : <Sun size={15} />}
+          </button>
+        </div>
+
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="w-14 h-14 rounded-2xl bg-primary-600 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-primary-500/30">
             <Building2 size={24} className="text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-white">Join SocioSphere</h1>
-          <p className="text-slate-400 mt-1 text-sm">Create your resident account</p>
+          <h1 className="page-title">Join SocioSphere</h1>
+          <p className="page-subtitle">Create your resident account</p>
         </div>
 
         <div className="glass-card p-8">
@@ -64,7 +77,7 @@ export default function Register() {
               </div>
               {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email.message}</p>}
             </div>
-
+ 
             {/* Flat & Phone */}
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -101,7 +114,7 @@ export default function Register() {
               {errors.password && <p className="text-red-400 text-xs mt-1">{errors.password.message}</p>}
             </div>
 
-            <button type="submit" disabled={loading} className="btn-primary w-full justify-center py-3 mt-2">
+            <button type="submit" disabled={loading} className="btn-primary w-full justify-center mt-2">
               {loading ? <Spinner size="sm" /> : 'Create Account'}
             </button>
           </form>

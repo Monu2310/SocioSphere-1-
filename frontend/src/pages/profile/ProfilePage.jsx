@@ -44,8 +44,8 @@ export default function ProfilePage() {
   return (
     <div className="space-y-6 animate-fade-in max-w-2xl">
       <div>
-        <h1 className="text-2xl font-bold text-white">Profile Settings</h1>
-        <p className="text-slate-400 text-sm mt-1">Manage your account information</p>
+        <h1 className="page-title">Profile Settings</h1>
+        <p className="page-subtitle">Manage your account information</p>
       </div>
 
       {/* Avatar + Info */}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { aiService } from '../../services';
 import { PageLoader, StatCard } from '../../components/common';
+import { useTheme } from '../../context/ThemeContext';
 import { Sparkles, TrendingUp, Users, Car, ShoppingBag, Vote, Activity, Clock } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import toast from 'react-hot-toast';
@@ -8,6 +9,7 @@ import toast from 'react-hot-toast';
 const COLORS = ['#06b6d4', '#38bdf8', '#2dd4bf', '#f59e0b', '#ef4444', '#14b8a6', '#84cc16'];
 
 export default function AIInsightsPage() {
+  const { isLight } = useTheme();
   const [insights, setInsights] = useState(null);
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -43,13 +45,20 @@ export default function AIInsightsPage() {
     votes: p.votes,
   })) || [];
 
+  const axisTick = isLight ? '#475569' : '#94a3b8';
+  const axisNumber = isLight ? '#64748b' : '#64748b';
+  const tooltipStyle = isLight
+    ? { backgroundColor: '#ffffff', border: '1px solid #cbd5e1', borderRadius: 8, color: '#0f172a' }
+    : { backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: 8 };
+  const pollBarColor = isLight ? '#0284c7' : '#06b6d4';
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+        <h1 className="page-title flex items-center gap-2">
           <Sparkles size={24} className="text-primary-400" /> AI Insights
         </h1>
-        <p className="text-slate-400 text-sm mt-1">Smart analytics and community intelligence</p>
+        <p className="page-subtitle">Smart analytics and community intelligence</p>
       </div>
 
       {/* Summary Stats */}
@@ -97,9 +106,9 @@ export default function AIInsightsPage() {
           {marketplaceData.length > 0 ? (
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={marketplaceData} layout="vertical">
-                <XAxis type="number" tick={{ fill: '#64748b', fontSize: 11 }} />
-                <YAxis type="category" dataKey="name" tick={{ fill: '#94a3b8', fontSize: 11 }} width={90} />
-                <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: 8 }} />
+                <XAxis type="number" tick={{ fill: axisNumber, fontSize: 11 }} />
+                <YAxis type="category" dataKey="name" tick={{ fill: axisTick, fontSize: 11 }} width={90} />
+                <Tooltip contentStyle={tooltipStyle} />
                 <Bar dataKey="count" radius={[0, 6, 6, 0]}>
                   {marketplaceData.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
                 </Bar>
@@ -117,10 +126,10 @@ export default function AIInsightsPage() {
           {pollData.length > 0 ? (
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={pollData} layout="vertical">
-                <XAxis type="number" tick={{ fill: '#64748b', fontSize: 11 }} />
-                <YAxis type="category" dataKey="name" tick={{ fill: '#94a3b8', fontSize: 11 }} width={120} />
-                <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: 8 }} />
-                <Bar dataKey="votes" fill="#06b6d4" radius={[0, 6, 6, 0]} />
+                <XAxis type="number" tick={{ fill: axisNumber, fontSize: 11 }} />
+                <YAxis type="category" dataKey="name" tick={{ fill: axisTick, fontSize: 11 }} width={120} />
+                <Tooltip contentStyle={tooltipStyle} />
+                <Bar dataKey="votes" fill={pollBarColor} radius={[0, 6, 6, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : <p className="text-slate-400 text-sm text-center py-12">No poll data yet</p>}

@@ -50,8 +50,8 @@ export default function ResidentDashboard() {
         <div className="pointer-events-none absolute -top-16 right-8 h-36 w-36 rounded-full bg-primary-500/15 blur-3xl" />
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div>
-            <h1 className="text-2xl font-bold text-white">Welcome back, {user?.name?.split(' ')[0]}! 👋</h1>
-            <p className="text-slate-400 mt-1">Flat {user?.flatNumber || '—'} · SocioSphere Resident</p>
+              <h1 className="page-title">Welcome back, {user?.name?.split(' ')[0]}! 👋</h1>
+              <p className="page-subtitle">Flat {user?.flatNumber || '—'} · SocioSphere Resident</p>
           </div>
           <div className="text-right hidden sm:block">
             <p className="text-slate-400 text-sm">{new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>

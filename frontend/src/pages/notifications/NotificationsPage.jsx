@@ -61,17 +61,17 @@ export default function NotificationsPage() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-start sm:items-center justify-between gap-3 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold text-white">Notifications</h1>
-          {unreadCount > 0 && <p className="text-slate-400 text-sm mt-1">{unreadCount} unread</p>}
+          <h1 className="page-title">Notifications</h1>
+          <p className="page-subtitle">{unreadCount > 0 ? `${unreadCount} unread` : 'Stay updated with community alerts'}</p>
         </div>
         <div className="flex gap-2 w-full sm:w-auto">
           {unreadCount > 0 && (
-            <button onClick={markAllRead} className="btn-secondary text-sm flex-1 sm:flex-none">
+            <button onClick={markAllRead} className="btn-secondary flex-1 sm:flex-none">
               <CheckCheck size={15} /> Mark All Read
             </button>
           )}
           {isAdmin && (
-            <button onClick={() => setShowBroadcast(true)} className="btn-primary text-sm flex-1 sm:flex-none">
+            <button onClick={() => setShowBroadcast(true)} className="btn-primary flex-1 sm:flex-none">
               <Send size={15} /> Broadcast
             </button>
           )}

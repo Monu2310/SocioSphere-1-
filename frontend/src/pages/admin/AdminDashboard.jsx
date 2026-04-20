@@ -48,8 +48,8 @@ export default function AdminDashboard() {
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-white">Admin Dashboard</h1>
-        <p className="text-slate-400 mt-1">Welcome back, {user?.name} 👋</p>
+          <h1 className="page-title">Admin Dashboard</h1>
+          <p className="page-subtitle">Welcome back, {user?.name} 👋</p>
       </div>
 
       {/* Stat Cards */}

@@ -39,7 +39,7 @@ export default function Sidebar({ mobileOpen = false, onClose = () => {} }) {
 
   return (
     <aside
-      className={`motion-surface fixed inset-y-0 left-0 z-40 flex h-screen flex-col border-r border-white/10 bg-dark-800/80 backdrop-blur-xl transition-transform duration-300 lg:static lg:translate-x-0 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'} ${collapsed ? 'w-16' : 'w-72 lg:w-64'}`}
+      className={`sidebar-shell motion-surface fixed inset-y-0 left-0 z-40 flex h-screen flex-col border-r border-white/10 bg-dark-800/80 backdrop-blur-xl transition-transform duration-300 lg:static lg:translate-x-0 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'} ${collapsed ? 'w-16' : 'w-72 lg:w-64'}`}
     >
       {/* Logo */}
       <div className={`flex items-center gap-3 p-4 border-b border-white/10 ${collapsed ? 'justify-center' : ''}`}>
@@ -98,7 +98,7 @@ export default function Sidebar({ mobileOpen = false, onClose = () => {} }) {
       {/* Collapse Toggle */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="absolute -right-3 top-20 hidden h-6 w-6 items-center justify-center rounded-full border border-white/20 bg-dark-700 transition-colors hover:bg-primary-600 z-10 lg:flex"
+        className="sidebar-collapse-toggle absolute -right-3 top-20 hidden h-6 w-6 items-center justify-center rounded-full border border-white/20 bg-dark-700 transition-colors hover:bg-primary-600 z-10 lg:flex"
       >
         {collapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
       </button>

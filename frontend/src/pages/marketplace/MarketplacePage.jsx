@@ -164,16 +164,16 @@ function ItemDetailsModal({ item, onClose, currentUserId, isAdmin, onEdit, onDel
 
             <div className="flex flex-wrap gap-2 pt-2">
               {item.seller?.phone && (
-                <a href={`tel:${item.seller.phone}`} className="btn-primary text-sm px-4 py-2">
+                <a href={`tel:${item.seller.phone}`} className="btn-primary">
                   <Phone size={14} /> Call Seller
                 </a>
               )}
               {canModify && (
                 <>
-                  <button type="button" onClick={() => { onClose(); onEdit(item); }} className="btn-secondary text-sm px-4 py-2">
+                  <button type="button" onClick={() => { onClose(); onEdit(item); }} className="btn-secondary">
                     <Edit size={14} /> Edit
                   </button>
-                  <button type="button" onClick={() => { onClose(); onDelete(item); }} className="btn-danger text-sm px-4 py-2">
+                  <button type="button" onClick={() => { onClose(); onDelete(item); }} className="btn-danger">
                     <Trash2 size={14} /> Remove
                   </button>
                 </>
@@ -340,8 +340,8 @@ export default function MarketplacePage() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-start sm:items-center justify-between gap-3 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold text-white">Marketplace</h1>
-          <p className="text-slate-400 text-sm mt-1">Buy & sell within your society</p>
+          <h1 className="page-title">Marketplace</h1>
+          <p className="page-subtitle">Buy & sell within your society</p>
         </div>
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <button
@@ -403,25 +403,25 @@ export default function MarketplacePage() {
           <button
             type="button"
             onClick={() => { setMineOnly((prev) => !prev); setPage(1); }}
-            className={`rounded-xl px-3 py-2 text-sm font-medium transition-colors border flex items-center justify-center gap-2 ${mineOnly ? 'bg-primary-600/25 border-primary-500/50 text-primary-200' : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'}`}
+            className={`market-toggle rounded-xl px-3 py-2 text-sm font-medium transition-colors border flex items-center justify-center gap-2 ${mineOnly ? 'market-toggle-active' : 'market-toggle-idle'}`}
           >
             <UserCircle2 size={16} /> My listings
           </button>
         </div>
 
         <div className="flex gap-2 overflow-x-auto whitespace-nowrap pb-1">
-          <button onClick={() => { setCategory(''); setPage(1); }} className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-colors ${category === '' ? 'bg-primary-600 text-white' : 'bg-white/5 text-slate-400 hover:bg-white/10'}`}>
+          <button onClick={() => { setCategory(''); setPage(1); }} className={`market-chip px-3 py-1.5 rounded-xl text-xs font-medium transition-colors ${category === '' ? 'market-chip-active' : 'market-chip-idle'}`}>
             All
           </button>
           {CATEGORIES.map((c) => (
-            <button key={c} onClick={() => { setCategory(c); setPage(1); }} className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-colors ${category === c ? 'bg-primary-600 text-white' : 'bg-white/5 text-slate-400 hover:bg-white/10'}`}>
+            <button key={c} onClick={() => { setCategory(c); setPage(1); }} className={`market-chip px-3 py-1.5 rounded-xl text-xs font-medium transition-colors ${category === c ? 'market-chip-active' : 'market-chip-idle'}`}>
               {CATEGORY_ICONS[c]} {c}
             </button>
           ))}
         </div>
         <div className="flex gap-2 overflow-x-auto whitespace-nowrap pb-1">
           {['AVAILABLE', 'RESERVED', 'SOLD', ''].map((s) => (
-            <button key={s} onClick={() => { setStatusFilter(s); setPage(1); }} className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-colors ${statusFilter === s ? 'bg-primary-600 text-white' : 'bg-white/5 text-slate-400 hover:bg-white/10'}`}>
+            <button key={s} onClick={() => { setStatusFilter(s); setPage(1); }} className={`market-chip px-3 py-1.5 rounded-xl text-xs font-medium transition-colors ${statusFilter === s ? 'market-chip-active' : 'market-chip-idle'}`}>
               {s || 'All Status'}
             </button>
           ))}

@@ -152,8 +152,8 @@ export default function ResidentManagement() {
       {/* Header */}
       <div className="flex items-start sm:items-center justify-between gap-3 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold text-white">Residents</h1>
-          <p className="text-slate-400 text-sm mt-1">{pagination.total || 0} residents registered</p>
+          <h1 className="page-title">Residents</h1>
+          <p className="page-subtitle">{pagination.total || 0} residents registered</p>
         </div>
         <button onClick={() => setShowAdd(true)} className="btn-primary w-full sm:w-auto">
           <Plus size={16} /> Add Resident

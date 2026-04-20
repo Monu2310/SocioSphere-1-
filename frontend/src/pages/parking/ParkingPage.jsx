@@ -161,13 +161,13 @@ export default function ParkingPage() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-start sm:items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-white">Parking Management</h1>
-          <p className="text-slate-400 text-sm mt-1">Manage society parking spaces</p>
+          <h1 className="page-title">Parking Management</h1>
+          <p className="page-subtitle">Manage society parking spaces</p>
         </div>
         {isAdmin && (
           <div className="flex gap-2 w-full sm:w-auto">
-            <button onClick={() => setShowCreate(true)} className="btn-secondary text-sm flex-1 sm:flex-none"><Plus size={15} /> New Slot</button>
-            <button onClick={() => setShowBulk(true)} className="btn-primary text-sm flex-1 sm:flex-none"><Plus size={15} /> Bulk Create</button>
+            <button onClick={() => setShowCreate(true)} className="btn-secondary flex-1 sm:flex-none"><Plus size={15} /> New Slot</button>
+            <button onClick={() => setShowBulk(true)} className="btn-primary flex-1 sm:flex-none"><Plus size={15} /> Bulk Create</button>
           </div>
         )}
       </div>

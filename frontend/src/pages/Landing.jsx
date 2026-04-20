@@ -20,7 +20,10 @@ import {
   ShieldCheck,
   Timer,
   Waves,
+  Sun,
+  Moon,
 } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 const features = [
   { icon: Users, title: 'Resident CRM', desc: 'Manage owners, tenants, and occupancy timelines from one command center.' },
@@ -139,6 +142,7 @@ const compareRows = [
 export default function Landing() {
   const [activeDemo, setActiveDemo] = useState('security');
   const [activeRole, setActiveRole] = useState('resident');
+  const { isLight, toggleTheme } = useTheme();
 
   const currentDemo = useMemo(
     () => demoViews.find((view) => view.id === activeDemo) ?? demoViews[0],
@@ -176,9 +180,18 @@ export default function Landing() {
           <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
         </div>
 
-        <div className="flex items-center gap-3">
-          <Link to="/login" className="btn-secondary text-sm">Sign In</Link>
-          <Link to="/register" className="btn-primary text-sm">Get Started</Link>
+        <div className="flex items-center gap-2.5">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="btn-secondary"
+            aria-label={isLight ? 'Switch to dark mode' : 'Switch to light mode'}
+            title={isLight ? 'Dark mode' : 'Light mode'}
+          >
+            {isLight ? <Moon size={15} /> : <Sun size={15} />}
+          </button>
+          <Link to="/login" className="btn-secondary">Sign In</Link>
+          <Link to="/register" className="btn-primary">Get Started</Link>
         </div>
       </nav>
 
@@ -201,11 +214,11 @@ export default function Landing() {
               SocioSphere unifies residents, committee members, and daily operations into one premium platform for communication, governance, and secure community living.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 hero-enter-up hero-delay-5">
-              <Link to="/register" className="btn-primary text-base px-8 py-4 rounded-2xl justify-center">
+            <div className="landing-cta-row mb-7 hero-enter-up hero-delay-5">
+              <Link to="/register" className="btn-primary justify-center">
                 Book a Live Demo <ArrowRight size={18} />
               </Link>
-              <Link to="/login" className="btn-secondary text-base px-8 py-4 rounded-2xl justify-center">
+              <Link to="/login" className="btn-secondary justify-center">
                 Explore Product
               </Link>
             </div>
@@ -489,11 +502,11 @@ export default function Landing() {
           <p className="text-slate-300 max-w-xl mx-auto mb-8">
             Bring security, communication, and society operations into one high-performance platform your residents actually enjoy using.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link to="/register" className="btn-primary text-base px-10 py-4 rounded-2xl inline-flex">
+          <div className="landing-cta-row justify-center">
+            <Link to="/register" className="btn-primary inline-flex">
               Start with SocioSphere <ArrowRight size={18} />
             </Link>
-            <Link to="/login" className="btn-secondary text-base px-10 py-4 rounded-2xl inline-flex">
+            <Link to="/login" className="btn-secondary inline-flex">
               View Dashboard Preview
             </Link>
           </div>

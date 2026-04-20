@@ -54,7 +54,7 @@ export default function AppLayout({ requireAdmin = false }) {
         </main>
       </div>
 
-      <nav className="fixed bottom-4 left-1/2 z-40 flex w-[calc(100%-1.5rem)] max-w-md -translate-x-1/2 items-center justify-between rounded-2xl border border-white/15 bg-slate-900/75 p-2 shadow-2xl backdrop-blur-xl lg:hidden">
+      <nav className="mobile-dock fixed bottom-4 left-1/2 z-40 flex w-[calc(100%-1.5rem)] max-w-md -translate-x-1/2 items-center justify-between rounded-2xl border border-white/15 bg-slate-900/75 p-2 shadow-2xl backdrop-blur-xl lg:hidden">
         {mobileLinks.map(({ to, icon: Icon, label }) => (
           <NavLink
             key={to}

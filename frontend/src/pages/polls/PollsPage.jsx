@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+ import { useEffect, useState, useCallback } from 'react';
 import { pollService } from '../../services';
 import { PageLoader, EmptyState, ConfirmModal, Modal, Badge, Pagination } from '../../components/common';
 import { Vote, Plus, Lock, Trash2, ChevronDown, ChevronUp, Users, Clock } from 'lucide-react';
@@ -11,7 +11,7 @@ function CreatePollForm({ onSubmit, loading }) {
     defaultValues: { title: '', description: '', options: [{ text: '' }, { text: '' }], expiresAt: '' },
   });
   const { fields, append, remove } = useFieldArray({ control, name: 'options' });
-
+ 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
@@ -209,8 +209,8 @@ export default function PollsPage() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-start sm:items-center justify-between gap-3 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold text-white">Community Polls</h1>
-          <p className="text-slate-400 text-sm mt-1">Participate in society decisions</p>
+          <h1 className="page-title">Community Polls</h1>
+          <p className="page-subtitle">Participate in society decisions</p>
         </div>
         {isAdmin && (
           <button onClick={() => setShowCreate(true)} className="btn-primary w-full sm:w-auto">

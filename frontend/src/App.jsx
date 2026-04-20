@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider, useTheme } from './context/ThemeContext';
 
 import AppLayout from './components/layout/AppLayout';
 import Landing from './pages/Landing';
@@ -16,16 +17,19 @@ import MarketplacePage from './pages/marketplace/MarketplacePage';
 import NotificationsPage from './pages/notifications/NotificationsPage';
 import ProfilePage from './pages/profile/ProfilePage';
 
-export default function App() {
+function AppRouter() {
+  const { isLight } = useTheme();
+
   return (
-    <AuthProvider>
-      <BrowserRouter>
+    <BrowserRouter>
         <Toaster
           position="top-right"
           toastOptions={{
-            style: { background: '#1e293b', color: '#f1f5f9', border: '1px solid rgba(255,255,255,0.1)' },
-            success: { iconTheme: { primary: '#10b981', secondary: '#1e293b' } },
-            error: { iconTheme: { primary: '#ef4444', secondary: '#1e293b' } },
+            style: isLight
+              ? { background: '#f8fafc', color: '#0f172a', border: '1px solid rgba(15,23,42,0.12)' }
+              : { background: '#1e293b', color: '#f1f5f9', border: '1px solid rgba(255,255,255,0.1)' },
+            success: { iconTheme: { primary: '#10b981', secondary: isLight ? '#f8fafc' : '#1e293b' } },
+            error: { iconTheme: { primary: '#ef4444', secondary: isLight ? '#f8fafc' : '#1e293b' } },
           }}
         />
         <Routes>
@@ -59,7 +63,16 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
-    </AuthProvider>
+  );
+}
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <AuthProvider>
+        <AppRouter />
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 
