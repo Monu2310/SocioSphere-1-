@@ -42,8 +42,8 @@ A full-stack SaaS-style web application for managing residential housing societi
 
 ```mermaid
 flowchart LR
-    U[Users] -->|Browser| FE[Frontend (React/Vite)]
-    FE -->|REST API| BE[Backend (Express)]
+    U[Users] -->|Browser| FE[Frontend: React + Vite]
+    FE -->|REST API| BE[Backend: Express]
     BE -->|Prisma ORM| DB[(PostgreSQL)]
     BE -->|Media Uploads| CL[Cloudinary]
 ```
