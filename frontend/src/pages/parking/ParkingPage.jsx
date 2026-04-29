@@ -105,6 +105,23 @@ export default function ParkingPage() {
   useEffect(() => { load(); }, [load]);
 
   useEffect(() => {
+    const handleFocus = () => load();
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') load();
+    };
+    const interval = setInterval(() => load(), 30000);
+
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+  }, [load]);
+
+  useEffect(() => {
     if (isAdmin) {
       residentService.getAll({ limit: 100 }).then((res) => setResidents(res.data.data)).catch(() => {});
     }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { aiService } from '../../services';
-import { PageLoader, StatCard } from '../../components/common';
+import { aiService, notificationService } from '../../services';
+import { PageLoader, StatCard, ConfirmModal } from '../../components/common';
 import { useTheme } from '../../context/ThemeContext';
 import { Sparkles, TrendingUp, Users, Car, ShoppingBag, Vote, Activity, Clock } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
@@ -13,6 +13,19 @@ export default function AIInsightsPage() {
   const [insights, setInsights] = useState(null);
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [priorities, setPriorities] = useState([]);
+  const [followups, setFollowups] = useState([]);
+  const [forecast, setForecast] = useState(null);
+  const [noticeTitle, setNoticeTitle] = useState('');
+  const [noticeAudience, setNoticeAudience] = useState('Residents');
+  const [noticePoints, setNoticePoints] = useState('');
+  const [noticeDraft, setNoticeDraft] = useState(null);
+  const [noticeSubject, setNoticeSubject] = useState('');
+  const [noticeBody, setNoticeBody] = useState('');
+  const [toolLoading, setToolLoading] = useState(false);
+  const [broadcasting, setBroadcasting] = useState(false);
+  const [showBroadcastConfirm, setShowBroadcastConfirm] = useState(false);
+  const [draftSavedAt, setDraftSavedAt] = useState(null);
 
   useEffect(() => {
     const load = async () => {
@@ -30,6 +43,38 @@ export default function AIInsightsPage() {
       }
     };
     load();
+  }, []);
+
+  useEffect(() => {
+    const loadTools = async () => {
+      try {
+        const [priorityRes, followRes, forecastRes] = await Promise.all([
+          aiService.getPriorityQueue(),
+          aiService.getFollowups(),
+          aiService.getMaintenanceForecast(),
+        ]);
+        setPriorities(priorityRes.data.data.priorities || []);
+        setFollowups(followRes.data.data.pending || []);
+        setForecast(forecastRes.data.data);
+      } catch {
+        toast.error('Failed to load AI tools');
+      }
+    };
+    loadTools();
+  }, []);
+
+  useEffect(() => {
+    const stored = localStorage.getItem('sociosphere-notice-draft');
+    if (!stored) return;
+    try {
+      const draft = JSON.parse(stored);
+      setNoticeDraft({ subject: draft.subject, body: draft.body });
+      setNoticeSubject(draft.subject || '');
+      setNoticeBody(draft.body || '');
+      setDraftSavedAt(draft.savedAt || null);
+    } catch {
+      localStorage.removeItem('sociosphere-notice-draft');
+    }
   }, []);
 
   if (loading) return <PageLoader />;
@@ -52,6 +97,57 @@ export default function AIInsightsPage() {
     : { backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: 8 };
   const pollBarColor = isLight ? '#0284c7' : '#06b6d4';
 
+  const handleGenerateNotice = async () => {
+    if (!noticeTitle.trim()) {
+      toast.error('Add a notice title');
+      return;
+    }
+    setToolLoading(true);
+    try {
+      const points = noticePoints.split('\n').map((p) => p.trim()).filter(Boolean);
+      const res = await aiService.generateNotice({ title: noticeTitle, points, audience: noticeAudience });
+      setNoticeDraft(res.data.data);
+      setNoticeSubject(res.data.data.subject || noticeTitle);
+      setNoticeBody(res.data.data.body || '');
+    } catch {
+      toast.error('Failed to generate notice draft');
+    } finally {
+      setToolLoading(false);
+    }
+  };
+
+  const handleBroadcastNotice = async () => {
+    if (!noticeSubject.trim() || !noticeBody.trim()) {
+      toast.error('Generate a draft and review the message');
+      return;
+    }
+    setBroadcasting(true);
+    try {
+      await notificationService.broadcast({
+        title: noticeSubject.trim(),
+        message: noticeBody.trim(),
+      });
+      toast.success('Notice broadcasted');
+      setShowBroadcastConfirm(false);
+    } catch {
+      toast.error('Failed to broadcast notice');
+    } finally {
+      setBroadcasting(false);
+    }
+  };
+
+  const handleSaveDraft = () => {
+    if (!noticeSubject.trim() && !noticeBody.trim()) {
+      toast.error('Draft is empty');
+      return;
+    }
+    const savedAt = new Date().toISOString();
+    const payload = { subject: noticeSubject.trim(), body: noticeBody.trim(), savedAt };
+    localStorage.setItem('sociosphere-notice-draft', JSON.stringify(payload));
+    setDraftSavedAt(savedAt);
+    toast.success('Draft saved');
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
@@ -70,6 +166,160 @@ export default function AIInsightsPage() {
           <StatCard icon={ShoppingBag} label="Listings" value={insights.summary.marketplaceListings} color="green" />
         </div>
       )}
+
+      {/* AI Operations */}
+      <div className="grid lg:grid-cols-3 gap-6">
+        <div className="glass-card p-6">
+          <h2 className="section-title mb-3">Priority Queue</h2>
+          {priorities.length === 0 ? (
+            <p className="text-slate-400 text-sm">No urgent items detected.</p>
+          ) : (
+            <div className="space-y-3">
+              {priorities.map((item, i) => (
+                <div key={`${item.title}-${i}`} className="bg-white/5 rounded-xl p-3">
+                  <p className="text-xs text-slate-400">{item.level} priority</p>
+                  <p className="text-sm text-white font-medium mt-1">{item.title}</p>
+                  <p className="text-xs text-slate-400 mt-1">{item.detail}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="glass-card p-6">
+          <h2 className="section-title mb-3">Smart Follow-ups</h2>
+          {followups.length === 0 ? (
+            <p className="text-slate-400 text-sm">No follow-ups needed right now.</p>
+          ) : (
+            <div className="space-y-3">
+              {followups.map((poll) => (
+                <div key={poll.pollId} className="bg-white/5 rounded-xl p-3">
+                  <p className="text-sm text-white font-medium">{poll.pollTitle}</p>
+                  <p className="text-xs text-slate-400 mt-1">
+                    Pending: {poll.pendingResidents.length} residents
+                  </p>
+                  <p className="text-xs text-slate-500 mt-1 line-clamp-2">
+                    {poll.pendingResidents.map((r) => r.name).join(', ')}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="glass-card p-6">
+          <h2 className="section-title mb-3">Maintenance Forecast</h2>
+          {forecast ? (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-slate-400">Risk Score</p>
+                <p className="text-lg font-semibold text-white">{forecast.riskScore}</p>
+              </div>
+              {forecast.signals?.length > 0 && (
+                <div>
+                  <p className="text-xs text-slate-400 mb-1">Signals</p>
+                  <ul className="text-xs text-slate-300 space-y-1">
+                    {forecast.signals.map((s) => <li key={s}>• {s}</li>)}
+                  </ul>
+                </div>
+              )}
+              <div>
+                <p className="text-xs text-slate-400 mb-1">Suggested actions</p>
+                <ul className="text-xs text-slate-300 space-y-1">
+                  {forecast.actions?.map((a) => <li key={a}>• {a}</li>)}
+                </ul>
+              </div>
+            </div>
+          ) : (
+            <p className="text-slate-400 text-sm">No forecast available.</p>
+          )}
+        </div>
+      </div>
+
+      <div className="glass-card p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="section-title">Notice Generator</h2>
+          <span className="badge-purple text-xs">AI Draft</span>
+        </div>
+        <div className="grid lg:grid-cols-2 gap-4">
+          <div className="space-y-3">
+            <div>
+              <label className="block text-xs text-slate-400 mb-1">Notice title</label>
+              <input
+                value={noticeTitle}
+                onChange={(e) => setNoticeTitle(e.target.value)}
+                className="input-field"
+                placeholder="Water supply maintenance"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-slate-400 mb-1">Audience</label>
+              <input
+                value={noticeAudience}
+                onChange={(e) => setNoticeAudience(e.target.value)}
+                className="input-field"
+                placeholder="Residents"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-slate-400 mb-1">Key points (one per line)</label>
+              <textarea
+                value={noticePoints}
+                onChange={(e) => setNoticePoints(e.target.value)}
+                className="input-field resize-none"
+                rows={6}
+                placeholder="Work window: 10am-1pm\nPlease store water in advance\nContact office for urgent needs"
+              />
+            </div>
+            <button type="button" onClick={handleGenerateNotice} className="btn-primary" disabled={toolLoading}>
+              {toolLoading ? 'Generating...' : 'Generate Draft'}
+            </button>
+          </div>
+          <div className="bg-white/5 rounded-xl p-4">
+            {noticeDraft ? (
+              <>
+                <label className="block text-xs text-slate-400 mb-1">Subject</label>
+                <input
+                  value={noticeSubject}
+                  onChange={(e) => setNoticeSubject(e.target.value)}
+                  className="input-field mb-3"
+                />
+                <label className="block text-xs text-slate-400 mb-1">Message</label>
+                <textarea
+                  value={noticeBody}
+                  onChange={(e) => setNoticeBody(e.target.value)}
+                  className="input-field resize-none"
+                  rows={10}
+                />
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+                  <div className="text-xs text-slate-400">
+                    {draftSavedAt ? `Draft saved ${new Date(draftSavedAt).toLocaleString('en-IN')}` : 'Draft not saved'}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handleSaveDraft}
+                      className="btn-secondary"
+                    >
+                      Save Draft
+                    </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowBroadcastConfirm(true)}
+                    className="btn-primary"
+                    disabled={broadcasting}
+                  >
+                    {broadcasting ? 'Broadcasting...' : 'Broadcast Notice'}
+                  </button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <p className="text-slate-400 text-sm">Generate a draft to preview the notice copy.</p>
+            )}
+          </div>
+        </div>
+      </div>
 
       {/* AI Insights Cards */}
       {insights?.insights?.length > 0 && (
@@ -94,7 +344,7 @@ export default function AIInsightsPage() {
           </div>
         </div>
       )}
-
+ 
       {/* Charts */}
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Marketplace Trends */}
@@ -166,6 +416,16 @@ export default function AIInsightsPage() {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={showBroadcastConfirm}
+        title="Broadcast Notice"
+        message="This will send the notice to all residents. Do you want to continue?"
+        onConfirm={handleBroadcastNotice}
+        onCancel={() => setShowBroadcastConfirm(false)}
+        loading={broadcasting}
+        danger={false}
+      />
     </div>
   );
 }

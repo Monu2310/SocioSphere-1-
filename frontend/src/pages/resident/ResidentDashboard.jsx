@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { pollService, parkingService, marketplaceService, notificationService } from '../../services';
+import { pollService, parkingService, marketplaceService, notificationService, aiService } from '../../services';
 import { StatCard, PageLoader, Badge } from '../../components/common';
 import { Vote, Car, ShoppingBag, Bell, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -14,34 +14,93 @@ export default function ResidentDashboard() {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [assistantQuestion, setAssistantQuestion] = useState('');
+  const [assistantAnswer, setAssistantAnswer] = useState(null);
+  const [triageTitle, setTriageTitle] = useState('');
+  const [triageDescription, setTriageDescription] = useState('');
+  const [triageResult, setTriageResult] = useState(null);
+  const [aiLoading, setAiLoading] = useState(false);
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const [pollsRes, parkingRes, marketRes, notifRes] = await Promise.all([
-          pollService.getAll({ status: 'ACTIVE', limit: 3 }),
-          parkingService.getAll({ status: 'OCCUPIED' }),
-          marketplaceService.getAll({ limit: 4, status: 'AVAILABLE' }),
-          notificationService.getAll({ limit: 5 }),
-        ]);
-        setPolls(pollsRes.data.data);
-        const mySlots = parkingRes.data.data.filter((s) =>
-          s.assignments?.some((a) => a.userId === user?.id && a.isActive)
-        );
-        setParkingSlots(mySlots);
-        setMarketItems(marketRes.data.data);
-        setNotifications(notifRes.data.data);
-        setUnreadCount(notifRes.data.unreadCount);
-      } catch {
-        toast.error('Failed to load dashboard');
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
+  const load = useCallback(async () => {
+    try {
+      const [pollsRes, parkingRes, marketRes, notifRes] = await Promise.all([
+        pollService.getAll({ status: 'ACTIVE', limit: 3 }),
+        parkingService.getAll({ status: 'OCCUPIED' }),
+        marketplaceService.getAll({ limit: 4, status: 'AVAILABLE' }),
+        notificationService.getAll({ limit: 5 }),
+      ]);
+      setPolls(pollsRes.data.data);
+      const mySlots = parkingRes.data.data.filter((s) =>
+        s.assignments?.some((a) => a.userId === user?.id && a.isActive)
+      );
+      setParkingSlots(mySlots);
+      setMarketItems(marketRes.data.data);
+      setNotifications(notifRes.data.data);
+      setUnreadCount(notifRes.data.unreadCount);
+    } catch {
+      toast.error('Failed to load dashboard');
+    } finally {
+      setLoading(false);
+    }
   }, [user?.id]);
 
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  useEffect(() => {
+    const handleFocus = () => load();
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') load();
+    };
+    const interval = setInterval(() => load(), 30000);
+
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+  }, [load]);
+
   if (loading) return <PageLoader />;
+
+  const handleAskAssistant = async () => {
+    if (!assistantQuestion.trim()) {
+      toast.error('Ask a question first');
+      return;
+    }
+    setAiLoading(true);
+    try {
+      const res = await aiService.getAssistant(assistantQuestion.trim());
+      setAssistantAnswer(res.data.data);
+    } catch {
+      toast.error('Assistant is unavailable');
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const handleTriage = async () => {
+    if (!triageTitle.trim() && !triageDescription.trim()) {
+      toast.error('Add complaint details');
+      return;
+    }
+    setAiLoading(true);
+    try {
+      const res = await aiService.triageComplaint({
+        title: triageTitle.trim(),
+        description: triageDescription.trim(),
+      });
+      setTriageResult(res.data.data);
+    } catch {
+      toast.error('Triage failed');
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -148,6 +207,62 @@ export default function ResidentDashboard() {
             ))}
           </div>
         )}
+      </div>
+
+      <div className="grid lg:grid-cols-2 gap-6">
+        <div className="glass-card p-6">
+          <h2 className="section-title mb-3">Resident AI Assistant</h2>
+          <div className="space-y-3">
+            <input
+              value={assistantQuestion}
+              onChange={(e) => setAssistantQuestion(e.target.value)}
+              className="input-field"
+              placeholder="Ask about parking, polls, marketplace, or notifications"
+            />
+            <button type="button" onClick={handleAskAssistant} className="btn-primary" disabled={aiLoading}>
+              {aiLoading ? 'Thinking...' : 'Ask Assistant'}
+            </button>
+            {assistantAnswer && (
+              <div className="bg-white/5 rounded-xl p-3 text-sm text-slate-300">
+                <p className="text-white font-medium mb-1">Answer</p>
+                <p>{assistantAnswer.answer}</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="glass-card p-6">
+          <h2 className="section-title mb-3">Complaint Triage</h2>
+          <div className="space-y-3">
+            <input
+              value={triageTitle}
+              onChange={(e) => setTriageTitle(e.target.value)}
+              className="input-field"
+              placeholder="Short title"
+            />
+            <textarea
+              value={triageDescription}
+              onChange={(e) => setTriageDescription(e.target.value)}
+              className="input-field resize-none"
+              rows={4}
+              placeholder="Describe the issue (location, urgency, etc.)"
+            />
+            <button type="button" onClick={handleTriage} className="btn-secondary" disabled={aiLoading}>
+              {aiLoading ? 'Analyzing...' : 'Analyze complaint'}
+            </button>
+            {triageResult && (
+              <div className="bg-white/5 rounded-xl p-3 text-sm text-slate-300">
+                <p className="text-white font-medium">{triageResult.summary}</p>
+                <p className="text-xs text-slate-400 mt-1">Priority: {triageResult.priority}</p>
+                {triageResult.recommendations?.length > 0 && (
+                  <ul className="text-xs text-slate-400 mt-2 space-y-1">
+                    {triageResult.recommendations.map((r) => <li key={r}>• {r}</li>)}
+                  </ul>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

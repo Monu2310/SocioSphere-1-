@@ -57,4 +57,10 @@ export const notificationService = {
 export const aiService = {
   getInsights: () => api.get('/ai/insights'),
   getActivityLogs: (params) => api.get('/ai/activity-logs', { params }),
+  getAssistant: (question) => api.post('/ai/assistant', { question }),
+  triageComplaint: (payload) => api.post('/ai/complaint-triage', payload),
+  generateNotice: (payload) => api.post('/ai/notice-draft', payload),
+  getFollowups: () => api.get('/ai/followups'),
+  getMaintenanceForecast: () => api.get('/ai/maintenance-forecast'),
+  getPriorityQueue: () => api.get('/ai/priority-queue'),
 };
