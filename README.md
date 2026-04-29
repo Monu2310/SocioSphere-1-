@@ -38,6 +38,18 @@ A full-stack SaaS-style web application for managing residential housing societi
 
 ---
 
+##  Architecture (Minimal)
+
+```mermaid
+flowchart LR
+    U[Users] -->|Browser| FE[Frontend (React/Vite)]
+    FE -->|REST API| BE[Backend (Express)]
+    BE -->|Prisma ORM| DB[(PostgreSQL)]
+    BE -->|Media Uploads| CL[Cloudinary]
+```
+
+---
+
 ##  Use Cases
 
 - **Committee/Admin:** Broadcast notices, monitor engagement, prioritize issues, and manage parking capacity.
